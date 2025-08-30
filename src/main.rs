@@ -88,6 +88,10 @@ fn main() {
                 eprintln!("File is not valid UTF-8: {}", path);
                 process::exit(1)
             }
+            std::io::ErrorKind::Interrupted => {
+                // Try reading the line again
+                continue;
+            }
             _ => {
                 eprintln!("Unexpected error reading {path}: {error}");
                 process::exit(2)
