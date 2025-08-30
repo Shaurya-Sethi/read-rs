@@ -1,7 +1,4 @@
-use std::{env, fs};
-use std::fs::File;
-use std::process;
-use std::io::{BufReader, BufRead};
+use std::{env, fs, process};
 
 fn main() {
    let args: Vec<String> = env::args().collect(); // Collect file path
@@ -36,68 +33,35 @@ fn main() {
     }
    } 
 
-   // validate that file is found and read-rs has permissions to read it
-   let file_result = File::open(path);
-   let file = match file_result {
-    Ok(file) => file,
-    Err(error) => {
-        match error.kind() {
-            std::io::ErrorKind::NotFound => {
-                eprintln!("File not found: {}", path);
-                process::exit(1)
-            }
-            std::io::ErrorKind::PermissionDenied => {
-                eprintln!("Missing read permission: {}", path);
-                process::exit(1)
-            }
-            _ => {
-                eprintln!("Error opening file: {}", error);
-                process::exit(2)
-            }
+   // validate whether file exists and we have permissions to read it
+   let bytes = fs::read(path);
+   let text = match bytes {
+    Ok(text) => text,
+    Err(error) => match error.kind() {
+        std::io::ErrorKind::NotFound => {
+            eprintln!("File not found: {}", path);
+            process::exit(1)
+        }
+        std::io::ErrorKind::PermissionDenied => {
+            eprintln!("Missing read permission: {}", path);
+            process::exit(1)
+        }
+        _ => { 
+            eprintln!("Error reading file {}: {}", path, error);
+            process::exit(2)
         }
     }
    };
 
-   // validate whether file is UTF-8
-   let bytes = fs::read(path);
-   let text = match bytes {
-    Ok(text) => text,
-    Err(error) => {
-        eprintln!("Error reading file {}: {}", path, error);
-        process::exit(1)
-    }
-   };
-
-   match str::from_utf8(&text) {
-    Ok(_) => {}  // file is utf-8 so proceed to reading
+   // validate whether file is utf-8
+   match std::str::from_utf8(&text) {
+    Ok(_) => {}  // all good, proceed to displaying
     Err(error) => {
         eprintln!("File {} is not valid UTF-8: {}", path, error);
         process::exit(1)
     }
    }
 
-   
-
-   // Read the file via streaming
-   let reader = BufReader::new(file);
-   for line in reader.lines() {
-    match line {
-        Ok(line) => println!("{}", line),
-        Err(error) => match error.kind() {
-            std::io::ErrorKind::InvalidData => {  // If file is not UTF-8, stop
-                eprintln!("File is not valid UTF-8: {}", path);
-                process::exit(1)
-            }
-            std::io::ErrorKind::Interrupted => {
-                // Try reading the line again
-                continue;
-            }
-            _ => {
-                eprintln!("Unexpected error reading {}: {}", path, error);
-                process::exit(2)
-            }
-        }
-    }
-   }
-   process::exit(0)  // Successful 
+   println!("{:?}", text);
+   process::exit(0)  // Successful
 }
