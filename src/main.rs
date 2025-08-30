@@ -69,6 +69,8 @@ fn main() {
         }
     }
 
-    println!("{text:?}");
+    // Convert bytes to string and print
+    let content = String::from_utf8(text).unwrap();
+    println!("{}", content);
     process::exit(0) // Successful
 }
