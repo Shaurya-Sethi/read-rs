@@ -1,6 +1,6 @@
 # read-rs
 
-A simple Rust command-line tool to read and display the contents of a text file.
+A simple Rust command-line tool to read and display the contents of a text file like `cat`.
 Supports **UTF-8 text files only**.
 
 ## Usage
