@@ -58,6 +58,26 @@ fn main() {
     }
    };
 
+   // validate whether file is UTF-8
+   let bytes = fs::read(path);
+   let text = match bytes {
+    Ok(text) => text,
+    Err(error) => {
+        eprintln!("Error reading file {}: {}", path, error);
+        process::exit(1)
+    }
+   };
+
+   match str::from_utf8(&text) {
+    Ok(_) => {}  // file is utf-8 so proceed to reading
+    Err(error) => {
+        eprintln!("File {} is not valid UTF-8: {}", path, error);
+        process::exit(1)
+    }
+   }
+
+   
+
    // Read the file via streaming
    let reader = BufReader::new(file);
    for line in reader.lines() {
