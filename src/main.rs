@@ -30,7 +30,7 @@ fn main() {
             process::exit(1)
         }
         _ => {
-            eprintln!("Unexpected error accessing {path}: {error}");
+            eprintln!("Unexpected error accessing {}: {}", path, error);
             process::exit(2)
         }
     }
@@ -93,7 +93,7 @@ fn main() {
                 continue;
             }
             _ => {
-                eprintln!("Unexpected error reading {path}: {error}");
+                eprintln!("Unexpected error reading {}: {}", path, error);
                 process::exit(2)
             }
         }
