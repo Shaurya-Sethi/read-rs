@@ -1,15 +1,20 @@
-use std::{env, fs, process};
+use clap::Parser;
+use std::{fs, process};
+
+/// A simple CLI tool to read and display the contents of a file.
+#[derive(Parser)]
+#[command(name = "read-rs")]
+#[command(about = "Reads and displays the contents of a specified file")]
+#[command(version = "1.0")]
+struct Cli {
+    /// The path to the file to read
+    file_path: String,
+}
 
 fn main() {
-    let args: Vec<String> = env::args().collect(); // Collect file path
+    let cli = Cli::parse();
 
-    if args.len() != 2 {
-        // only two arguments are allowed
-        eprintln!("Usage: read-rs <FILE_PATH>");
-        process::exit(1)
-    }
-
-    let path = &args[1];
+    let path = &cli.file_path;
 
     // Check if the path points to a directory
     match fs::metadata(path) {
