@@ -14,22 +14,22 @@ fn main() {
     // Check if the path points to a directory
     match fs::metadata(path) {
         Ok(metadata) if metadata.is_dir() => {
-            eprintln!("This is a directory, not a file: {}", path);
+            eprintln!("This is a directory, not a file: {path}");
             process::exit(1)
         }
         Ok(_) => {} // it's a file so proceed to opening file
         Err(error) => match error.kind() {
             // Handle various possible errors
             std::io::ErrorKind::NotFound => {
-                eprintln!("File not found: {}", path);
+                eprintln!("File not found: {path}");
                 process::exit(1)
             }
             std::io::ErrorKind::PermissionDenied => {
-                eprintln!("Missing permissions to get metadata: {}", path);
+                eprintln!("Missing permissions to get metadata: {path}");
                 process::exit(1)
             }
             _ => {
-                eprintln!("Unexpected error accessing {}: {}", path, error);
+                eprintln!("Unexpected error accessing {path}: {error}");
                 process::exit(2)
             }
         },
@@ -41,15 +41,15 @@ fn main() {
         Ok(text) => text,
         Err(error) => match error.kind() {
             std::io::ErrorKind::NotFound => {
-                eprintln!("File not found: {}", path);
+                eprintln!("File not found: {path}");
                 process::exit(1)
             }
             std::io::ErrorKind::PermissionDenied => {
-                eprintln!("Missing read permission: {}", path);
+                eprintln!("Missing read permission: {path}");
                 process::exit(1)
             }
             _ => {
-                eprintln!("Error reading file {}: {}", path, error);
+                eprintln!("Error reading file {path}: {error}");
                 process::exit(2)
             }
         },
@@ -59,11 +59,11 @@ fn main() {
     match std::str::from_utf8(&text) {
         Ok(_) => {} // all good, proceed to displaying
         Err(error) => {
-            eprintln!("File {} is not valid UTF-8: {}", path, error);
+            eprintln!("File {path} is not valid UTF-8: {error}");
             process::exit(1)
         }
     }
 
-    println!("{:?}", text);
+    println!("{text:?}");
     process::exit(0) // Successful
 }
